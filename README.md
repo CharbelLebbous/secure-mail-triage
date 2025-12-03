@@ -47,3 +47,20 @@ Use `COLAB_TEMPLATE.md` as a cell-by-cell guide to build the notebook quickly:
 - Prompts for classification, explanation, and action recommendation
 - LangChain chains that wire the prompts to an LLM
 - Evaluation cells to print results and a quick accuracy check
+
+## Publishing to your GitHub repo
+If you want this project in your own GitHub account (e.g., a repo named `secure-mail-triage`), follow these steps locally:
+
+1. Create an empty repo on GitHub (do not initialize with a README or license).
+2. In your local clone, add the remote and push:
+   ```bash
+   git remote add origin https://github.com/<your-username>/secure-mail-triage.git
+   git branch -M main
+   git push -u origin main
+   ```
+3. If you prefer SSH, swap the remote URL:
+   ```bash
+   git remote set-url origin git@github.com:<your-username>/secure-mail-triage.git
+   git push -u origin main
+   ```
+4. After pushing, verify on GitHub that `README.md` and `COLAB_TEMPLATE.md` are present.
