@@ -77,7 +77,7 @@ def normalize_email(subject: str, body: str):
 ```python
 from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.schema import StrOutputParser
+from langchain_core.output_parsers import StrOutputParser
 
 # Use a free-tier Cohere chat model available to your account (e.g., "command-r").
 llm = ChatCohere(model="command-r", temperature=0)
