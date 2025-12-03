@@ -9,6 +9,10 @@ This template mirrors the agentic workflow described in the README. Copy the cel
 import os
 # Store your Cohere key in Colab secrets for safety, or paste temporarily while testing.
 os.environ["COHERE_API_KEY"] = "<YOUR_COHERE_KEY>"
+
+# Pick any Cohere chat model available to your account. If you see a 404/NotFoundError
+# about a removed model, switch this name to a supported one from Cohere docs/dashboard.
+COHERE_MODEL = "command-r-plus"
 ```
 
 ## 2) Sample inline dataset
@@ -79,8 +83,8 @@ from langchain_cohere import ChatCohere
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-# Use a free-tier Cohere chat model available to your account (e.g., "command-r").
-llm = ChatCohere(model="command-r", temperature=0)
+# Use a free-tier Cohere chat model available to your account (e.g., "command-r-plus").
+llm = ChatCohere(model=COHERE_MODEL, temperature=0)
 
 classification_prompt = ChatPromptTemplate.from_template(
     """

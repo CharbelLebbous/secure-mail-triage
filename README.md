@@ -45,10 +45,10 @@ Use `COLAB_TEMPLATE.md` as a cell-by-cell guide to build the notebook quickly wi
 - Inline dataset and reputation hints (no external downloads)
 - Helper functions for normalization and URL/domain extraction
 - Prompts for classification, explanation, and action recommendation
-- LangChain chains wired to Cohere’s `command-r` (or any free-tier model available to you)
+- LangChain chains wired to a Cohere chat model you can access (default `command-r-plus`)
 - Evaluation cells to print results and a quick accuracy check
 
 **Notes for Cohere setup**
 - Create a free Cohere account and obtain an API key (the ChatGPT Plus subscription does **not** include this key).
 - Keep prompts concise to fit free-tier limits; set `temperature=0` for consistent outputs.
-- If the free-tier model availability changes, swap the `model` name in the template to any Cohere chat model your tier supports.
+- If you encounter a `NotFoundError` saying a model was removed (e.g., `command-r`), switch the `COHERE_MODEL` variable in the template to a currently supported Cohere chat model for your tier (check Cohere’s docs/dashboard).
