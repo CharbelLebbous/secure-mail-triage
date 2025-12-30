@@ -1,4 +1,9 @@
-"""Classification pipeline wiring specialized agents together."""  # Module docstring summarizing purpose.
+"""Classification pipeline wiring specialized agents together.
+
+Usage notes:
+- ClassificationPipeline is the rule-based (legacy) pipeline.
+- create_llm_pipeline builds the LLM agentic workflow used by the CLI/UI.
+"""  # Module docstring summarizing purpose.
 from __future__ import annotations  # Enable postponed evaluation of type annotations.
 
 import logging  # Logging library for progress and debug messages.
@@ -40,8 +45,8 @@ class ClassificationPipeline:  # High-level orchestrator running all agents in s
         )
         self.aggregator = ClassificationAggregator(phishing_threshold=phishing_threshold)  # Instantiate final aggregator.
 
-    def run(self, email: Email) -> AgentResult:  # Execute the full classification flow for a single email.
-        """Execute each agent and merge results into a classification."""  # Docstring summarizing run behavior.
+    def run_with_details(self, email: Email) -> tuple[AgentResult, Dict[str, AgentResult]]:
+        """Execute each agent and merge results into a classification with details."""
         structure = self.structure_agent.run(email)  # Normalize and extract structural features.
         tone = self.tone_agent.run(structure.features["normalized_body"])  # Score tone cues using normalized body text.
         content = self.content_agent.run(structure.features["normalized_body"])  # Flag policy violations from same text.
@@ -62,7 +67,44 @@ class ClassificationPipeline:  # High-level orchestrator running all agents in s
             classification.features["risk_score"],
             classification.warnings,
         )
+        details = {
+            "structure": structure,
+            "tone": tone,
+            "content": content,
+            "safety": safety,
+            "context": context,
+            "classification": classification,
+        }
+        return classification, details
+
+    def run(self, email: Email) -> AgentResult:  # Execute the full classification flow for a single email.
+        """Execute each agent and merge results into a classification."""  # Docstring summarizing run behavior.
+        classification, _ = self.run_with_details(email)
         return classification  # Return the aggregated classification result to the caller.
 
 
-__all__ = ["ClassificationPipeline"]  # Export the pipeline class for consumers.
+def create_llm_pipeline(
+    api_key: Optional[str] = None,
+    model: Optional[str] = None,
+    reputation: Optional[Dict[str, str]] = None,
+    allow_senders: Optional[Iterable[str]] = None,
+    block_senders: Optional[Iterable[str]] = None,
+    allow_domains: Optional[Iterable[str]] = None,
+    phishing_threshold: int = 4,
+):
+    """Factory for LLM-backed pipeline to avoid importing OpenAI unless needed."""
+    from .llm_client import LLMClient
+    from .llm_agents import LLMClassificationPipeline
+
+    client = LLMClient(api_key=api_key, model=model)
+    return LLMClassificationPipeline(
+        client=client,
+        reputation=reputation,
+        allow_senders=allow_senders,
+        block_senders=block_senders,
+        allow_domains=allow_domains,
+        phishing_threshold=phishing_threshold,
+    )
+
+
+__all__ = ["ClassificationPipeline", "create_llm_pipeline"]  # Exported symbols.

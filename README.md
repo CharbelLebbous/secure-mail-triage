@@ -23,8 +23,8 @@ The pipeline decomposes classification into small, testable agents and a simple 
 - Guardrails: input validation and limits (body length, attachment count) to prevent pathological inputs from derailing classification.
 - Observability: agents emit structured data and warnings; the aggregator surfaces a rationale list summarizing why risk increased.
 
-## Quickstart
-Run the example script to see the multi-agent pipeline in action:
+## Legacy rule-based demo (optional)
+Run the example script to see the original rule-based pipeline in action. The CLI/UI use the LLM pipeline.
 
 ```bash
 python example_usage.py
@@ -48,3 +48,67 @@ Warnings: ['Duplicate recipients detected']
 ```
 
 You can adjust allow/block lists, reputation hints, and the phishing threshold inside `ClassificationPipeline` to match your environment.
+
+## Setup (ML agentic pipeline + Gmail)
+Install dependencies:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+Set your OpenAI key (and optional model):
+
+```bash
+# PowerShell
+$env:OPENAI_API_KEY="your_key_here"
+$env:OPENAI_MODEL="gpt-4o-mini"
+```
+
+`OPENAI_MODEL` is optional. The UI uses a fixed model (`gpt-4o-mini`), while the CLI can override the model with `--model`.
+
+
+## ML agentic quickstart (LLM agents)
+Classify a single email from text using LLM-backed agents:
+
+```bash
+python -m secure_mail_triage.cli text --subject "Test" --body "Please verify your account"
+```
+
+## Gmail ingestion
+1. Create a Google Cloud project and enable the Gmail API.
+2. Create OAuth client credentials (Desktop app) and download `credentials.json`.
+3. Place `credentials.json` in the repo root (or pass `--credentials`).
+4. Run:
+
+```bash
+python -m secure_mail_triage.cli gmail --query "newer_than:7d" --max-results 5
+```
+
+The first run opens a browser for OAuth and writes `token.json`.
+
+## Data persistence
+Results are stored in SQLite (default `triage.db`) with verdicts, rationale, and agent outputs.
+You can change the location with `--db`.
+
+## UI (Streamlit)
+Run a lightweight UI for manual triage and viewing recent results:
+
+```bash
+streamlit run secure_mail_triage/ui_app.py
+```
+
+The UI uses the fixed model `gpt-4o-mini` and reads `OPENAI_API_KEY` from the environment.
+
+## Notes
+- LLM mode sends email content to the OpenAI API. Use only with permission and avoid sensitive data when required.
+
+## Ethical AI Considerations
+- Privacy & data minimization: Gmail access is read-only; attachments are not downloaded; storage is optional and limited to results metadata.
+- Consent & user control: The system is run only on accounts with explicit user authorization; results storage can be disabled.
+- Transparency & explainability: Outputs include a risk score and a rationale list; agent outputs are stored for audit when enabled.
+- Human oversight: The tool provides triage suggestions; final decisions remain with a human reviewer.
+- Bias & fairness: Prompts and thresholds can be tuned; evaluation on a small labeled set is recommended to track false positives/negatives.
+- Robustness & prompt injection: System prompts explicitly treat email text as untrusted and ignore instructions inside it.
+- Security: API keys are read from environment variables; OAuth tokens are stored locally and ignored by Git.

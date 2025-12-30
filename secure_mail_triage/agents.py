@@ -1,4 +1,10 @@
-"""Core agents for the secure mail triage classification workflow."""  # Module docstring summarizing the agents collection.
+"""Core agents for the secure mail triage classification workflow.
+
+Usage notes:
+- Email and AgentResult are shared across all pipelines.
+- EmailStructureAgent is used by both rule-based and LLM pipelines.
+- The remaining agents below are rule-based and used by the legacy ClassificationPipeline.
+"""  # Module docstring summarizing the agents collection.
 
 from __future__ import annotations  # Future import to support postponed evaluation of annotations.
 
@@ -47,6 +53,7 @@ def extract_domains(urls: Iterable[str]) -> List[str]:  # Helper to pull domains
 
 
 # ------------------------- Agent implementations ------------------------  # Section header for agent classes.
+# The agents below implement the rule-based (legacy) pipeline logic.
 class EmailStructureAgent:  # Agent responsible for normalization and structural extraction.
     """Parses headers, links, and attachments with guardrails."""  # Docstring describing responsibilities.
 
