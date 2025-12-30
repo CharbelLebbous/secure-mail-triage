@@ -1,22 +1,22 @@
 # Secure Mail Triage LLM
 
-Agentic workflow design for classifying and triaging phishing emails. The focus is a multi-agent classification pipeline that keeps decisions explainable, observable, and easy to extend.
+LLM-agentic workflow for classifying and triaging phishing emails with Gmail ingestion, a CLI/UI, and SQLite audit storage. The pipeline keeps decisions explainable and easy to extend while relying on OpenAI-powered agents.
 
 ## Problem description
-Phishing emails remain a top initial access vector. Manual review is slow and inconsistent, which delays response and increases risk. This project designs an agentic workflow that classifies incoming messages as phishing or legitimate using specialized agents and a final aggregation step.
+Phishing emails remain a top initial access vector. Manual review is slow and inconsistent, which delays response and increases risk. This project implements an LLM-agentic workflow that classifies incoming messages as phishing or legitimate using specialized LLM agents and a final aggregation step, with optional Gmail ingestion and persistent audit logs.
 
 ## Agentic classification workflow
-The pipeline decomposes classification into small, testable agents and a simple aggregator.
+The pipeline decomposes classification into small, specialized LLM agents plus a final aggregator.
 
-1. **Email Structure Agent** – normalizes headers/body, extracts URLs/domains, enforces size/attachment limits, and outputs structured fields for downstream agents.
-2. **Tone & Intent Agent** – scores urgency, coercion, and impersonation cues in the normalized body text.
-3. **Content Policy Agent** – flags credential harvest attempts, payment/transfer asks, and PII collection with detected term spans.
-4. **Link & Attachment Safety Agent** – evaluates domains against reputation hints and heuristic TLD/IP checks; scores risky attachments (executables, encrypted files).
-5. **User/Org Context Agent** – applies allow/block lists and simple anomalies (duplicate recipients) to adjust risk.
-6. **Classification Aggregator** – fuses all agent outputs into a risk score and verdict, carrying forward warnings for observability/guardrails.
+1. **Email Structure Agent** -> normalizes headers/body, extracts URLs/domains, enforces size/attachment limits, and outputs structured fields.
+2. **Tone & Intent LLM Agent** -> scores urgency, coercion, and impersonation cues in the normalized body text.
+3. **Content Policy LLM Agent** -> flags credential harvest attempts, payment/transfer asks, and PII collection with detected term spans.
+4. **Link & Attachment Safety LLM Agent** -> evaluates domains and attachment metadata for risk.
+5. **User/Org Context LLM Agent** -> applies allow/block lists and simple anomalies (duplicate recipients) to adjust risk.
+6. **LLM Aggregator** -> fuses all agent outputs into a risk score and verdict with rationale.
 
 ### Data flow
-- Intake via **Email Structure Agent** → tone, content, link/attachment safety, and user/org context agents → **Classification Aggregator**.
+- Intake via **Email Structure Agent** -> LLM agents (tone, content, safety, context) -> **LLM Aggregator**.
 - Each agent returns structured `features` and `warnings` that remain visible in the final result for debugging and auditability.
 
 ### Observability & guardrails
