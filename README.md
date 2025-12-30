@@ -1,4 +1,4 @@
-# Secure Mail Triage
+# Secure Mail Triage LLM
 
 Agentic workflow design for classifying and triaging phishing emails. The focus is a multi-agent classification pipeline that keeps decisions explainable, observable, and easy to extend.
 
