@@ -101,6 +101,11 @@ streamlit run secure_mail_triage/ui_app.py
 
 The UI uses the fixed model `gpt-4o-mini` and reads `OPENAI_API_KEY` from the environment.
 
+Screenshots:
+
+![UI Screenshot 1](docs/ui-screenshot-1.jpg)
+![UI Screenshot 2](docs/ui-screenshot-2.jpg)
+
 ## Notes
 - LLM mode sends email content to the OpenAI API. Use only with permission and avoid sensitive data when required.
 
